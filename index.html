@@ -10,7 +10,7 @@
 :root{
   --green:#0F7A52; --green-dark:#0A5C3D;
   --ink:#16211C; --ink-soft:#5F6F67;
-  --card:#FFFFFF; --bg:#F4F7F5; --line:#DCE7E1; --r:14px; --reserve:62px;
+  --card:#FFFFFF; --bg:#F4F7F5; --line:#DCE7E1; --r:14px; --reserve:50px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
@@ -53,12 +53,17 @@ body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,
 .side{width:var(--reserve);display:flex;align-items:center;justify-content:center}
 .item:active{transform:scale(.985)}
 .item:focus-visible{outline:3px solid var(--green);outline-offset:2px}
-.name{font-size:32px;font-weight:700;letter-spacing:.01em;line-height:1.3;
-  display:flex;align-items:center;flex-wrap:wrap;gap:4px 6px;min-width:0}
-.name .txt{word-break:break-word}
+.name{font-size:32px;font-weight:700;letter-spacing:0;line-height:1.25;
+  display:flex;align-items:center;flex-wrap:nowrap;gap:6px;min-width:0}
+.name .txt{white-space:nowrap}
+.name.n5 {font-size:27px}
+.name.n6 {font-size:24px}
+.name.n7 {font-size:21px}
+.name.n8 {font-size:19px}
+.name.n10{font-size:17px}
 .name mark{background:#FFE9A8;color:inherit;border-radius:3px;padding:0 1px}
 .tag{display:inline-block;flex:0 0 auto;color:#fff;
-  font-size:13px;font-weight:500;letter-spacing:.06em;padding:3px 9px;border-radius:5px;white-space:nowrap}
+  font-size:12px;font-weight:500;letter-spacing:.04em;padding:3px 7px;border-radius:5px;white-space:nowrap}
 .tag.herb{background:var(--green-dark)}          /* 飲片：深綠 */
 .tag.ext{background:#1B3E7A}                     /* 科中：深藍 */
 .slot.ext{background:#2A5AA8}                    /* 科中儲位牌 */
@@ -66,10 +71,10 @@ body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,
 .brand{margin-top:3px;font-size:10.5px;color:var(--ink-soft);letter-spacing:.02em;
   max-width:110px;word-break:break-all;line-height:1.3}
 .cold{display:inline-block;background:#E3F2FB;border:1px solid #B7DCF0;color:#1A5C86;
-  font-size:16.5px;font-weight:700;padding:5px 8px;border-radius:7px;line-height:1.25;
+  font-size:14px;font-weight:700;padding:4px 6px;border-radius:6px;line-height:1.25;
   text-align:center;white-space:nowrap}
-.slot{min-width:108px;text-align:center;background:var(--green);color:#fff;
-  border-radius:10px;padding:9px 12px;font-size:29px;font-weight:900;letter-spacing:.03em;
+.slot{min-width:92px;text-align:center;background:var(--green);color:#fff;
+  border-radius:10px;padding:8px 10px;font-size:27px;font-weight:900;letter-spacing:.02em;
   line-height:1.15;word-break:break-all}
 .slot mark{background:rgba(255,255,255,.32);color:#fff;border-radius:3px}
 
@@ -94,12 +99,12 @@ footer{margin-top:22px;padding:16px 14px calc(20px + env(safe-area-inset-bottom)
 @media (min-width:640px){
   .searchwrap,.list,.status{max-width:640px;margin-left:auto;margin-right:auto}
   .name{font-size:34px}
-  .slot{font-size:31px;min-width:116px}
+  .slot{font-size:29px;min-width:104px}
 }
 @media (max-width:360px){
-  :root{--reserve:54px}
+  :root{--reserve:44px}
   .name{font-size:26px}
-  .slot{font-size:24px;min-width:92px;padding:7px 9px}
+  .slot{font-size:23px;min-width:82px;padding:7px 8px}
 }
 </style>
 </head>
@@ -283,6 +288,16 @@ function load(){
   });
 }
 
+function sizeClass(n){
+  var L = n.length;
+  if(L >= 10) return "n10";
+  if(L >= 8)  return "n8";
+  if(L >= 7)  return "n7";
+  if(L >= 6)  return "n6";
+  if(L >= 5)  return "n5";
+  return "";
+}
+
 function render(){
   var term = q.value.replace(/[\s　]/g, "").toLowerCase();
   var keys = term ? [term].concat(term.split("")) : [];
@@ -306,7 +321,7 @@ function render(){
   }
   out.innerHTML = '<div class="list">' + hit.map(function(d){
     return '<div class="item" tabindex="0" data-copy="' + esc(d.name + " " + d.slot) + '">' +
-             '<div class="name">' +
+             '<div class="name ' + sizeClass(d.name) + '">' +
                '<span class="txt">' + hl(d.name, keys) + '</span>' +
                '<span class="tag ' + d.cls + '">' + esc(d.type) + '</span>' +
              '</div>' +
