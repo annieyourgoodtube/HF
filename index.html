@@ -19,15 +19,17 @@ body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,
 
 .hero{position:relative;overflow:hidden;text-align:center;color:#fff;
   background:linear-gradient(155deg,#128A5C 0%,var(--green) 45%,var(--green-dark) 100%);
-  padding:calc(20px + env(safe-area-inset-top)) 14px 20px;border-radius:0 0 22px 22px}
+  padding:calc(16px + env(safe-area-inset-top)) 10px 16px;border-radius:0 0 20px 20px}
 .hero::after{content:"";position:absolute;inset:0;opacity:.13;pointer-events:none;
   background:repeating-linear-gradient(90deg,#fff 0 1px,transparent 1px 40px),
              repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 40px)}
 .hero .inner{position:relative;z-index:1}
 .leaf{width:30px;height:30px;margin-bottom:2px;opacity:.95}
-.hero h1{margin:0;font-size:clamp(20px, 5.4vw, 32px);font-weight:900;letter-spacing:.04em;line-height:1.35}
-.hero h1 em{font-style:normal;font-size:1.8em;letter-spacing:.02em;line-height:1.1}
-.hero .sub{margin-bottom:2px;font-size:clamp(17px, 4.5vw, 26px);opacity:.94;letter-spacing:.08em;font-weight:500}
+.hero h1{margin:0;font-size:clamp(15px, 5.3vw, 30px);font-weight:900;letter-spacing:.01em;
+  line-height:1.3;white-space:nowrap}
+.hero h1 em{font-style:normal;font-size:1.8em;letter-spacing:0;line-height:1.1}
+.hero .sub{margin-bottom:2px;font-size:clamp(14px, 4vw, 24px);opacity:.94;letter-spacing:.06em;
+  font-weight:500;white-space:nowrap}
 
 .searchwrap{position:sticky;top:0;z-index:10;background:var(--bg);padding:10px 12px 6px}
 .field{display:flex;align-items:center;gap:9px;background:var(--card);border:2px solid var(--green);
