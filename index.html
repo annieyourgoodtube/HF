@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F7A52">
+<title>中藥 科中✕飲片 儲位查詢｜台中慈濟醫院藥學部</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#0F7A52; --green-dark:#0A5C3D;
+  --ink:#16211C; --ink-soft:#5F6F67;
+  --card:#FFFFFF; --bg:#F4F7F5; --line:#DCE7E1; --r:14px; --reserve:62px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;
+  font-size:17px;line-height:1.6;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+
+.hero{position:relative;overflow:hidden;text-align:center;color:#fff;
+  background:linear-gradient(155deg,#128A5C 0%,var(--green) 45%,var(--green-dark) 100%);
+  padding:calc(20px + env(safe-area-inset-top)) 14px 20px;border-radius:0 0 22px 22px}
+.hero::after{content:"";position:absolute;inset:0;opacity:.13;pointer-events:none;
+  background:repeating-linear-gradient(90deg,#fff 0 1px,transparent 1px 40px),
+             repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 40px)}
+.hero .inner{position:relative;z-index:1}
+.leaf{width:30px;height:30px;margin-bottom:2px;opacity:.95}
+.hero h1{margin:0;font-size:clamp(20px, 5.4vw, 32px);font-weight:900;letter-spacing:.04em;line-height:1.35}
+.hero h1 em{font-style:normal;font-size:1.8em;letter-spacing:.02em;line-height:1.1}
+.hero .sub{margin-bottom:2px;font-size:clamp(17px, 4.5vw, 26px);opacity:.94;letter-spacing:.08em;font-weight:500}
+
+.searchwrap{position:sticky;top:0;z-index:10;background:var(--bg);padding:10px 12px 6px}
+.field{display:flex;align-items:center;gap:9px;background:var(--card);border:2px solid var(--green);
+  border-radius:999px;padding:11px 15px;box-shadow:0 6px 16px -10px rgba(15,122,82,.55)}
+.field svg{flex:0 0 auto;color:var(--green)}
+#q{flex:1;min-width:0;border:0;outline:0;background:transparent;font-family:inherit;
+  font-size:18px;font-weight:500;color:var(--ink)}
+#q::placeholder{color:#9DB0A7;font-weight:400}
+.clear{border:0;background:#E7EDEA;color:var(--ink-soft);width:26px;height:26px;border-radius:50%;
+  font-size:16px;line-height:1;cursor:pointer;display:none;flex:0 0 auto}
+
+.status{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:6px 14px 0;font-size:12.5px;color:var(--ink-soft)}
+.status button{border:1px solid var(--line);background:var(--card);color:var(--green);
+  font-family:inherit;font-size:12.5px;font-weight:500;padding:5px 12px;border-radius:999px;cursor:pointer}
+
+.list{padding:8px 12px 0;display:grid;gap:8px}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto var(--reserve);align-items:center;gap:6px;
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:11px 12px;box-shadow:0 1px 6px -4px rgba(22,33,28,.3);cursor:pointer;transition:transform .1s}
+.side{width:var(--reserve);display:flex;align-items:center;justify-content:center}
+.item:active{transform:scale(.985)}
+.item:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.name{font-size:32px;font-weight:700;letter-spacing:.02em;line-height:1.3;word-break:break-all}
+.name mark{background:#FFE9A8;color:inherit;border-radius:3px;padding:0 1px}
+.tag{display:inline-block;margin-left:7px;vertical-align:2px;color:#fff;
+  font-size:13px;font-weight:500;letter-spacing:.06em;padding:3px 9px;border-radius:5px;white-space:nowrap}
+.tag.herb{background:var(--green-dark)}          /* 飲片：深綠 */
+.tag.ext{background:#1B3E7A}                     /* 科中：深藍 */
+.slot.ext{background:#2A5AA8}                    /* 科中儲位牌 */
+.slotbox{flex:0 0 auto;text-align:center;margin-right:6px}
+.brand{margin-top:3px;font-size:10.5px;color:var(--ink-soft);letter-spacing:.02em;
+  max-width:110px;word-break:break-all;line-height:1.3}
+.cold{display:inline-block;background:#E3F2FB;border:1px solid #B7DCF0;color:#1A5C86;
+  font-size:16.5px;font-weight:700;padding:5px 8px;border-radius:7px;line-height:1.25;
+  text-align:center;white-space:nowrap}
+.slot{min-width:108px;text-align:center;background:var(--green);color:#fff;
+  border-radius:10px;padding:9px 12px;font-size:29px;font-weight:900;letter-spacing:.03em;
+  line-height:1.15;word-break:break-all}
+.slot mark{background:rgba(255,255,255,.32);color:#fff;border-radius:3px}
+
+.empty{text-align:center;padding:44px 20px;color:var(--ink-soft);font-size:14px}
+.empty .big{font-size:19px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.err{margin:12px;padding:12px 14px;border-radius:12px;background:#FDECEA;border:1px solid #F0B4AC;
+  color:#9B2C1E;font-size:13.5px;line-height:1.7;word-break:break-all}
+
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));
+  transform:translate(-50%,16px);background:var(--ink);color:#fff;font-size:14px;font-weight:500;
+  padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:.2s;z-index:30}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+footer{margin-top:22px;padding:16px 14px calc(20px + env(safe-area-inset-bottom));
+  font-size:11.5px;color:var(--ink-soft);text-align:center;line-height:1.9;border-top:1px solid var(--line)}
+.motto{color:var(--green);letter-spacing:.2em;font-weight:700;font-size:2em;margin-bottom:8px;line-height:1.4}
+.org{color:var(--ink);font-weight:700;font-size:1.8em;line-height:1.5}
+.lead{font-size:1.5em;line-height:1.6;margin-top:2px}
+.maker{font-size:1.3em;line-height:1.6;margin-top:2px}
+.ver{margin-top:6px;font-size:11px;opacity:.75}
+
+@media (min-width:640px){
+  .searchwrap,.list,.status{max-width:640px;margin-left:auto;margin-right:auto}
+  .name{font-size:34px}
+  .slot{font-size:31px;min-width:116px}
+}
+@media (max-width:360px){
+  :root{--reserve:54px}
+  .name{font-size:26px}
+  .slot{font-size:24px;min-width:92px;padding:7px 9px}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <div class="sub">台中慈濟醫院 藥學部</div>
+    <svg class="leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 20c0-8 5-14 14-15 1 9-4 15-11 15H5z"/><path d="M5 20c3-4 6-6 10-7.5"/>
+    </svg>
+    <h1>中藥<em>科中✕飲片</em>儲位查詢</h1>
+  </div>
+</div>
+
+<div class="searchwrap">
+  <div class="field">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+      <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>
+    </svg>
+    <input id="q" type="search" inputmode="search" placeholder="輸入藥名或儲位…" autocomplete="off">
+    <button class="clear" id="clear" aria-label="清除">✕</button>
+  </div>
+</div>
+
+<div class="status">
+  <span id="count">載入中…</span>
+  <button id="refresh">↻ 重新載入</button>
+</div>
+
+<div id="out"></div>
+
+<footer>
+  <div class="motto">格物致知・誠意正心</div>
+  <div class="org">台中慈濟醫院 藥學部</div>
+  <div class="lead">指導：陳綺華 部主任、李雅蓁 科主任</div>
+  <div class="maker">製作：許文馨 組長</div>
+  系統維護：施瑢家、李家豪、李紀賢
+  <div class="ver">版本：2026.07</div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+/* ===== 資料來源：Google 試算表「20260714新飲片試算表」 =====
+   兩個分頁一起讀：飲片、科中
+   欄位皆為：A 料號、B 名字、C 新儲位（第 1 列為標題）
+   試算表需設定：共用 → 知道連結的任何人 → 檢視者        */
+var SHEET_ID = "1Y3dHTCY3tgvOn6lWY-utVW6NbzH-zrrgdYVDPmDo1A4";
+var SOURCES = [
+  // col：欄位索引（0=A、1=B、2=C、3=D、4=E）
+  { sheet: "飲片", type: "飲片", cls: "herb",
+    col: { sku:0, name:1, slot:2, brand:-1, note:3 } },         // A料號 B名字 C新儲位 D備註（有值就顯示❄）
+  { sheet: "科中", type: "科中", cls: "ext",
+    col: { sku:0, name:1, slot:2, brand:4, note:-1 } }          // C=中藥局儲位（顯示）、D=中藥庫儲位（忽略）、E=廠牌
+];
+
+var HOME_LIMIT = 5, SEARCH_LIMIT = 50;
+
+var DATA = [];
+function $(s){ return document.querySelector(s); }
+var q = $("#q"), out = $("#out");
+
+function toast(m){
+  var t = $("#toast"); t.textContent = m; t.classList.add("show");
+  clearTimeout(t._t); t._t = setTimeout(function(){ t.classList.remove("show"); }, 1500);
+}
+function esc(s){
+  return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];
+  });
+}
+function hl(t, keys){
+  var s = esc(t);
+  keys.forEach(function(k){
+    if(!k) return;
+    var re = new RegExp("(" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+    s = s.replace(re, "<mark>$1</mark>");
+  });
+  return s;
+}
+
+/* CSV 解析（支援引號、逗號、換行） */
+function parseCSV(text){
+  var rows = [], row = [], cell = "", inQ = false;
+  text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  for(var i = 0; i < text.length; i++){
+    var c = text[i];
+    if(inQ){
+      if(c === '"'){ if(text[i+1] === '"'){ cell += '"'; i++; } else inQ = false; }
+      else cell += c;
+    }else{
+      if(c === '"') inQ = true;
+      else if(c === ","){ row.push(cell); cell = ""; }
+      else if(c === "\n"){ row.push(cell); rows.push(row); row = []; cell = ""; }
+      else cell += c;
+    }
+  }
+  if(cell !== "" || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
+
+function scoreOf(d, term){
+  var name = d.name.toLowerCase(), slot = d.slot.toLowerCase(), sku = (d.sku || "").toLowerCase();
+  if(name === term || slot === term || sku === term) return 100;
+  if(name.indexOf(term) === 0 || slot.indexOf(term) === 0 || sku.indexOf(term) === 0) return 80;
+  if(name.indexOf(term) >= 0 || slot.indexOf(term) >= 0 || sku.indexOf(term) >= 0) return 60;
+  var hay = name + slot + sku, chars = term.split("");
+  return chars.length && chars.every(function(c){ return hay.indexOf(c) >= 0; }) ? 30 + chars.length : 0;
+}
+
+function fail(msg){
+  $("#count").textContent = "載入失敗";
+  out.innerHTML = '<div class="err"><b>無法讀取試算表</b><br>' + esc(msg) +
+    '<br>請確認試算表共用設定為「知道連結的任何人 → 檢視者」。</div>';
+}
+
+function loadSheet(src, done){
+  var cb = "gvizCB" + Math.random().toString(36).slice(2);
+  var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID +
+            "/gviz/tq?tqx=out:json;responseHandler:" + cb +
+            "&sheet=" + encodeURIComponent(src.sheet) + "&_=" + Date.now();
+  var sc = document.createElement("script");
+  var timer = setTimeout(function(){ cleanup(); done([]); }, 15000);
+
+  function cleanup(){
+    clearTimeout(timer);
+    try{ delete window[cb]; }catch(e){}
+    if(sc.parentNode) sc.parentNode.removeChild(sc);
+  }
+
+  window[cb] = function(res){
+    var items = [];
+    try{
+      var rows = (res && res.table && res.table.rows) ? res.table.rows : [];
+      var C = src.col;
+      items = rows.map(function(r){
+        var c = r.c || [];
+        function val(i){ return (i >= 0 && c[i] && c[i].v != null) ? String(c[i].v).trim() : ""; }
+        return {
+          sku:   val(C.sku),
+          name:  val(C.name),
+          slot:  val(C.slot),
+          brand: val(C.brand),
+          note:  (C.note != null ? val(C.note) : ""),
+          type:  src.type,
+          cls:   src.cls
+        };
+      }).filter(function(d){
+        if(!d.name) return false;
+        if(d.name.indexOf("名字") === 0 || d.name === "品名") return false;             // 標題列
+        if(d.slot.indexOf("儲位") >= 0 || d.sku === "料號") return false;
+        return true;
+      });
+    }catch(e){}
+    cleanup();
+    done(items);
+  };
+
+  sc.src = url;
+  sc.onerror = function(){ cleanup(); done([]); };   // 分頁不存在也不影響其他分頁
+  document.body.appendChild(sc);
+}
+
+function load(){
+  $("#count").textContent = "載入中…";
+  out.innerHTML = "";
+  DATA = [];
+  var left = SOURCES.length;
+  SOURCES.forEach(function(src){
+    loadSheet(src, function(items){
+      DATA = DATA.concat(items);
+      if(--left === 0){
+        if(!DATA.length){
+          fail("讀不到資料，請確認試算表共用設定為「知道連結的任何人 → 檢視者」");
+        }else{
+          render();
+        }
+      }
+    });
+  });
+}
+
+function render(){
+  var term = q.value.replace(/[\s　]/g, "").toLowerCase();
+  var keys = term ? [term].concat(term.split("")) : [];
+
+  var matched = !term ? DATA :
+    DATA.map(function(d){ return { d:d, s:scoreOf(d, term) }; })
+        .filter(function(x){ return x.s > 0; })
+        .sort(function(a,b){ return (b.s - a.s) || (a.d.name.length - b.d.name.length); })
+        .map(function(x){ return x.d; });
+
+  var LIMIT = term ? SEARCH_LIMIT : HOME_LIMIT;
+  var hit = matched.slice(0, LIMIT);
+
+  $("#count").textContent = term
+    ? "找到 " + matched.length + " 筆" + (matched.length > LIMIT ? "（顯示前 " + LIMIT + " 筆）" : "")
+    : "共 " + DATA.length + " 項（飲片＋科中），請輸入藥名查詢";
+
+  if(!hit.length){
+    out.innerHTML = '<div class="empty"><div class="big">查無這個品項</div>試試藥名的其中兩個字，或直接輸入儲位。</div>';
+    return;
+  }
+  out.innerHTML = '<div class="list">' + hit.map(function(d){
+    return '<div class="item" tabindex="0" data-copy="' + esc(d.name + " " + d.slot) + '">' +
+             '<div class="name">' + hl(d.name, keys) +
+               '<span class="tag ' + d.cls + '">' + esc(d.type) + '</span>' +
+             '</div>' +
+             '<div class="slotbox">' +
+               '<div class="slot ' + (d.cls === "ext" ? "ext" : "") + '">' + (hl(d.slot, keys) || "—") + '</div>' +
+               (d.brand ? '<div class="brand">' + esc(d.brand) + '</div>' : '') +
+             '</div>' +
+             '<div class="side">' + (d.note ? '<span class="cold">❄<br>冷庫</span>' : '') + '</div>' +
+           '</div>';
+  }).join("") + '</div>';
+}
+
+q.addEventListener("input", function(){
+  $("#clear").style.display = q.value ? "block" : "none";
+  render();
+});
+$("#clear").addEventListener("click", function(){
+  q.value = ""; $("#clear").style.display = "none"; render(); q.focus();
+});
+$("#refresh").addEventListener("click", load);
+
+function copySlot(el){
+  var s = el.getAttribute("data-copy") || "";
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(s).then(function(){ toast("已複製 " + s); },
+                                          function(){ toast(s); });
+  }else{ toast(s); }
+}
+out.addEventListener("click", function(e){
+  var d = e.target.closest(".item"); if(d) copySlot(d);
+});
+out.addEventListener("keydown", function(e){
+  if(e.key === "Enter" || e.key === " "){
+    var d = e.target.closest(".item");
+    if(d){ e.preventDefault(); copySlot(d); }
+  }
+});
+
+load();
+</script>
+</body>
+</html>
