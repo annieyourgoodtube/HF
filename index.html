@@ -79,6 +79,9 @@ body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,
 .err{margin:12px;padding:12px 14px;border-radius:12px;background:#FDECEA;border:1px solid #F0B4AC;
   color:#9B2C1E;font-size:13.5px;line-height:1.7;word-break:break-all}
 
+.todaybox{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom));
+  background:rgba(15,122,82,.10);color:var(--green-dark);border:1px solid rgba(15,122,82,.25);
+  font-size:12px;font-weight:500;padding:5px 11px;border-radius:999px;z-index:25;pointer-events:none}
 #toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));
   transform:translate(-50%,16px);background:var(--ink);color:#fff;font-size:14px;font-weight:500;
   padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:.2s;z-index:30}
@@ -144,6 +147,7 @@ footer{margin-top:22px;padding:16px 14px calc(20px + env(safe-area-inset-bottom)
   <div class="ver">版本：2026.07</div>
 </footer>
 
+<div id="today" class="todaybox"></div>
 <div id="toast"></div>
 
 <script>
@@ -161,6 +165,36 @@ var SOURCES = [
 ];
 
 var HOME_LIMIT = 5, SEARCH_LIMIT = 50;
+
+/* ===== 查詢次數統計（選用）=====
+   把部署好的 GAS 網址填進 COUNT_URL 即啟用。
+   有輸入關鍵字、停止打字 1 秒後計一次；不記名、不記內容。 */
+var COUNT_URL = "https://script.google.com/macros/s/AKfycbwxKEcWqoNjcjAz4aGwKMmg9bgjVAG6fIjenXTNH_xPBAStyEYpOfojtTgb7B1v-GMM/exec";
+var countTimer = null, counted = false;
+function applyToday(n){
+  var el = document.getElementById("today");
+  if(el) el.textContent = "今日查詢 " + n + " 次";
+}
+function callCount(action){
+  if(!COUNT_URL) return;
+  var cb = "cntCB" + Math.random().toString(36).slice(2);
+  window[cb] = function(res){
+    try{ if(res && typeof res.today !== "undefined") applyToday(res.today); }catch(e){}
+    try{ delete window[cb]; }catch(e){}
+    if(sc.parentNode) sc.parentNode.removeChild(sc);
+  };
+  var sc = document.createElement("script");
+  sc.src = COUNT_URL + "?action=" + action + "&callback=" + cb + "&_=" + Date.now();
+  sc.onerror = function(){ if(sc.parentNode) sc.parentNode.removeChild(sc); };
+  document.body.appendChild(sc);
+}
+function bumpCount(){
+  var term = q.value.trim();
+  if(!term){ counted = false; return; }   // 清空 → 重置，下次再算
+  if(counted) return;                      // 這次查詢已計過，不重複
+  counted = true;
+  callCount("hit");
+}
 
 var DATA = [];
 function $(s){ return document.querySelector(s); }
@@ -342,6 +376,7 @@ function render(){
 q.addEventListener("input", function(){
   $("#clear").style.display = q.value ? "block" : "none";
   render();
+  bumpCount();   // 一有輸入就算一次（同一次查詢不重複）
 });
 $("#clear").addEventListener("click", function(){
   q.value = ""; $("#clear").style.display = "none"; render(); q.focus();
@@ -367,6 +402,7 @@ out.addEventListener("keydown", function(e){
 
 window.addEventListener("resize", fitNames);
 
+callCount("view");   // 進頁面先顯示今日數字
 load();
 </script>
 </body>
