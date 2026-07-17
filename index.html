@@ -169,17 +169,20 @@ var HOME_LIMIT = 5, SEARCH_LIMIT = 50;
 /* ===== 查詢次數統計（選用）=====
    把部署好的 GAS 網址填進 COUNT_URL 即啟用。
    有輸入關鍵字、停止打字 1 秒後計一次；不記名、不記內容。 */
-var COUNT_URL = "https://script.google.com/macros/s/AKfycbwxKEcWqoNjcjAz4aGwKMmg9bgjVAG6fIjenXTNH_xPBAStyEYpOfojtTgb7B1v-GMM/exec";
+var COUNT_URL = "https://script.google.com/macros/s/AKfycbxvp_2LsBbRWTmp_9lUwuFeHmCoPlRvOypLndAwdFTnspL-ouIYJ3ZaJB24sxkuVgdK/exec";
 var countTimer = null, counted = false;
-function applyToday(n){
+function applyToday(res){
   var el = document.getElementById("today");
-  if(el) el.textContent = "今日查詢 " + n + " 次";
+  if(!el) return;
+  var t = (res && typeof res.today !== "undefined") ? res.today : 0;
+  var sum = (res && typeof res.total !== "undefined") ? res.total : null;
+  el.textContent = "今日查詢 " + t + " 次" + (sum != null ? "　·　累計 " + sum + " 次" : "");
 }
 function callCount(action){
   if(!COUNT_URL) return;
   var cb = "cntCB" + Math.random().toString(36).slice(2);
   window[cb] = function(res){
-    try{ if(res && typeof res.today !== "undefined") applyToday(res.today); }catch(e){}
+    try{ applyToday(res); }catch(e){}
     try{ delete window[cb]; }catch(e){}
     if(sc.parentNode) sc.parentNode.removeChild(sc);
   };
