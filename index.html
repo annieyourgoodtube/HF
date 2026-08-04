@@ -48,27 +48,29 @@ body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,
   font-family:inherit;font-size:12.5px;font-weight:500;padding:5px 12px;border-radius:999px;cursor:pointer}
 
 .list{padding:5px 6px 0;display:grid;gap:6px}
-.item{display:grid;grid-template-columns:minmax(0,1fr) 120px 96px var(--reserve);align-items:center;gap:8px;
+.item{display:grid;grid-template-columns:1fr 88px 76px var(--reserve);align-items:center;gap:6px}
+.item>*{min-width:0}
+.item .name{overflow:hidden}
   background:var(--card);border:1px solid var(--line);border-radius:12px;
   padding:10px 10px;box-shadow:0 1px 6px -4px rgba(22,33,28,.3);cursor:pointer;transition:transform .1s}
 .side{width:var(--reserve);display:flex;align-items:center;justify-content:center}
 .item:active{transform:scale(.985)}
 .item:focus-visible{outline:3px solid var(--green);outline-offset:2px}
-.name{font-size:32px;font-weight:700;letter-spacing:0;line-height:1.25;
+.name{font-size:52px;font-weight:700;letter-spacing:0;line-height:1.15;
   display:flex;align-items:center;flex-wrap:nowrap;gap:6px;min-width:0}
 .name .txt{white-space:nowrap}
 .name{overflow:hidden}
 .name mark{background:#FFE9A8;color:inherit;border-radius:3px;padding:0 1px}
 .tag{display:inline-block;flex:0 0 auto;color:#fff;
-  font-size:12px;font-weight:500;letter-spacing:.04em;padding:3px 7px;border-radius:5px;white-space:nowrap}
+  font-size:18px;font-weight:600;letter-spacing:.04em;padding:4px 9px;border-radius:6px;white-space:nowrap}
 .tag.herb{background:var(--green-dark)}          /* 飲片：深綠 */
 .tag.ext{background:#1B3E7A}                     /* 科中：深藍 */
 .slot.ext{background:#2A5AA8}                    /* 科中儲位牌 */
 .cslot{display:flex;justify-content:center;align-items:center}
 .cslot2{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px}
 .slotrow{display:flex;align-items:center;justify-content:flex-start;gap:10px;flex-wrap:wrap}
-.slot2{background:#FFD54A;color:#3A2E00;border:1px solid #E3B92E;border-radius:10px;
-  padding:8px 11px;font-size:24px;font-weight:900;letter-spacing:.02em;line-height:1.1;
+.slot2{background:#FFD54A;color:#3A2E00;border:1px solid #E3B92E;border-radius:8px;
+  padding:5px 8px;font-size:17px;font-weight:900;letter-spacing:.02em;line-height:1.1;
   text-align:center;white-space:nowrap;box-shadow:0 1px 4px -2px rgba(0,0,0,.3)}
 .slot2 .k{display:block;font-size:12px;font-weight:700;letter-spacing:.1em;opacity:.75;margin-bottom:1px}
 .slot2 mark{background:rgba(255,255,255,.45);border-radius:3px}
@@ -77,8 +79,8 @@ body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,
 .cold{display:inline-block;background:#E3F2FB;border:1px solid #B7DCF0;color:#1A5C86;
   font-size:14px;font-weight:700;padding:4px 6px;border-radius:6px;line-height:1.25;
   text-align:center;white-space:nowrap}
-.slot{min-width:112px;text-align:center;background:var(--green);color:#fff;
-  border-radius:11px;padding:10px 13px;font-size:33px;font-weight:900;letter-spacing:.02em;
+.slot{min-width:80px;text-align:center;background:var(--green);color:#fff;
+  border-radius:9px;padding:7px 9px;font-size:23px;font-weight:900;letter-spacing:.02em;
   line-height:1.12;word-break:break-all}
 .slot mark{background:rgba(255,255,255,.32);color:#fff;border-radius:3px}
 
@@ -106,13 +108,13 @@ footer{margin-top:22px;padding:16px 14px calc(20px + env(safe-area-inset-bottom)
 
 @media (min-width:640px){
   .searchwrap,.list,.status{max-width:100%;margin-left:auto;margin-right:auto}
-  .name{font-size:34px}
-  .slot{font-size:29px;min-width:104px}
+  .name{font-size:54px}
+  .slot{font-size:24px;min-width:84px}
 }
 @media (max-width:360px){
   :root{--reserve:44px}
-  .name{font-size:26px}
-  .slot{font-size:23px;min-width:82px;padding:7px 8px}
+  .name{font-size:40px}
+  .slot{font-size:20px;min-width:70px;padding:6px 7px}
 }
 </style>
 </head>
@@ -339,7 +341,7 @@ function load(){
 
 /* 量測後自動縮字：確保藥名＋標籤同一排 */
 function fitNames(){
-  var MAX = 32, MIN = 13;
+  var MAX = 52, MIN = 22;
   var els = document.querySelectorAll(".name");
   for(var i = 0; i < els.length; i++){
     var el = els[i], size = MAX;
