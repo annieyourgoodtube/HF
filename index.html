@@ -48,13 +48,17 @@ body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,
   font-family:inherit;font-size:12.5px;font-weight:500;padding:5px 12px;border-radius:999px;cursor:pointer}
 
 .list{padding:5px 6px 0;display:grid;gap:6px}
-.item{display:grid;grid-template-columns:1fr 88px 76px var(--reserve);align-items:center;gap:6px}
+.item{display:grid;grid-template-columns:1fr 88px 76px var(--reserve);align-items:center;gap:6px;
+  background:var(--card);border:2px solid #B9CBC1;border-left-width:7px;border-radius:12px;
+  padding:12px 12px;box-shadow:0 2px 8px -4px rgba(22,33,28,.25);cursor:pointer;
+  transition:transform .1s,border-color .1s}
 .item>*{min-width:0}
 .item .name{overflow:hidden}
-  background:var(--card);border:1px solid var(--line);border-radius:12px;
-  padding:10px 10px;box-shadow:0 1px 6px -4px rgba(22,33,28,.3);cursor:pointer;transition:transform .1s}
+.item.herbcard{border-left-color:var(--green-dark)}
+.item.extcard{border-left-color:#1B3E7A}
 .side{width:var(--reserve);display:flex;align-items:center;justify-content:center}
-.item:active{transform:scale(.985)}
+.item:active{transform:scale(.985);border-color:var(--green)}
+.item:hover{border-color:var(--green)}
 .item:focus-visible{outline:3px solid var(--green);outline-offset:2px}
 .name{font-size:52px;font-weight:700;letter-spacing:0;line-height:1.15;
   display:flex;align-items:center;flex-wrap:nowrap;gap:6px;min-width:0}
@@ -376,7 +380,7 @@ function render(){
     return;
   }
   out.innerHTML = '<div class="list">' + hit.map(function(d){
-    return '<div class="item" tabindex="0" data-copy="' + esc(d.name + " " + d.slot) + '">' +
+    return '<div class="item ' + (d.cls === "ext" ? "extcard" : "herbcard") + '" tabindex="0" data-copy="' + esc(d.name + " " + d.slot) + '">' +
              '<div class="name">' +
                '<span class="txt">' + hl(d.name, keys) + '</span>' +
                '<span class="tag ' + d.cls + '">' + esc(d.type) + '</span>' +
