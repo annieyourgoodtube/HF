@@ -48,21 +48,21 @@ body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,
   font-family:inherit;font-size:12.5px;font-weight:500;padding:5px 12px;border-radius:999px;cursor:pointer}
 
 .list{padding:5px 6px 0;display:grid;gap:6px}
-.item{display:grid;grid-template-columns:1fr auto auto var(--reserve);align-items:center;gap:10px;
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto auto var(--reserve);align-items:center;gap:12px;
   background:var(--card);border:2px solid #B9CBC1;border-left-width:7px;border-radius:12px;
   padding:12px 12px;box-shadow:0 2px 8px -4px rgba(22,33,28,.25);cursor:pointer;
   transition:transform .1s,border-color .1s}
 .item>*{min-width:0}
-.item .name{overflow:hidden}
+.item .name{overflow:visible;width:100%}
 .item.herbcard{border-left-color:var(--green-dark)}
 .item.extcard{border-left-color:#1B3E7A}
 .side{width:var(--reserve);display:flex;align-items:center;justify-content:center}
 .item:active{transform:scale(.985);border-color:var(--green)}
 .item:hover{border-color:var(--green)}
 .item:focus-visible{outline:3px solid var(--green);outline-offset:2px}
-.name{font-size:52px;font-weight:700;letter-spacing:0;line-height:1.15;
-  display:flex;align-items:center;flex-wrap:nowrap;gap:8px;min-width:0;overflow:visible}
-.name .txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.name{font-size:34px;font-weight:700;letter-spacing:0;line-height:1.2;
+  display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;min-width:0}
+.name .txt{white-space:normal;word-break:break-word}
 .name{overflow:hidden}
 .name mark{background:#FFE9A8;color:inherit;border-radius:3px;padding:0 1px}
 .tag{display:inline-block;flex:0 0 auto;white-space:nowrap;color:#fff;
@@ -112,12 +112,12 @@ footer{margin-top:22px;padding:16px 14px calc(20px + env(safe-area-inset-bottom)
 
 @media (min-width:640px){
   .searchwrap,.list,.status{max-width:100%;margin-left:auto;margin-right:auto}
-  .name{font-size:54px}
+  .name{font-size:38px}
   .slot{font-size:24px;min-width:84px}
 }
 @media (max-width:400px){
   .hero h1{font-size:clamp(15px,4.6vw,20px)}
-  .name{font-size:38px}
+  .name{font-size:28px}
   .slot{font-size:22px;min-width:66px;padding:6px 8px}
   .slot2{font-size:15px;padding:5px 7px}
   .tag{font-size:15px;padding:3px 7px}
@@ -348,17 +348,16 @@ function load(){
 
 /* 量測後自動縮字：確保藥名＋標籤同一排 */
 function fitNames(){
-  var MAX = 48, MIN = 22;
+  var MAX = 48, MIN = 15;
   var els = document.querySelectorAll(".name");
   for(var i = 0; i < els.length; i++){
     var el = els[i];
-    var avail = el.clientWidth;                 // 欄位可用寬
+    var avail = el.clientWidth;
     if(!avail) continue;
     var size = MAX;
     el.style.fontSize = size + "px";
     var guard = 0;
-    // 內容實際寬(含標籤) 超過欄寬就縮，直到塞得下
-    while(el.scrollWidth > avail && size > MIN && guard < 60){
+    while(el.scrollWidth > avail + 1 && size > MIN && guard < 90){
       size -= 1; guard++;
       el.style.fontSize = size + "px";
     }
@@ -401,7 +400,7 @@ function render(){
            '</div>';
   }).join("") + '</div>';
 
-  fitNames();
+  // fitNames();  // 藥名固定大字，不縮
 }
 
 q.addEventListener("input", function(){
@@ -431,7 +430,6 @@ out.addEventListener("keydown", function(e){
   }
 });
 
-window.addEventListener("resize", fitNames);
 
 callCount("view");   // 進頁面先顯示今日數字
 load();
