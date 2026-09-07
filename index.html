@@ -56,6 +56,7 @@ body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,
 .item .name{overflow:visible;width:100%}
 .item.herbcard{border-left-color:var(--green-dark)}
 .item.extcard{border-left-color:#1B3E7A}
+.item.nocard{border-left-color:#B9CBC1}
 .side{width:var(--reserve);display:flex;align-items:center;justify-content:center}
 .item:active{transform:scale(.985);border-color:var(--green)}
 .item:hover{border-color:var(--green)}
@@ -168,17 +169,19 @@ footer{margin-top:22px;padding:16px 14px calc(20px + env(safe-area-inset-bottom)
 <div id="toast"></div>
 
 <script>
-/* ===== 資料來源：Google 試算表「20260714新飲片試算表」 =====
-   兩個分頁一起讀：飲片、科中
-   欄位皆為：A 料號、B 名字、C 新儲位（第 1 列為標題）
+/* ===== 資料來源：Google 試算表「中藥查詢儲位」 =====
+   只讀 工作表1
+   欄位：A 儲位、B 中藥名、C 冰庫、D 藥庫儲位、E 廠牌（第 1 列為標題）
+   類別依「儲位開頭」自動判定：
+     1 個英文字母(A103) → 科中（藍牌）
+     2 個英文字母(RA01) → 飲片（綠牌）
+     開頭中文(自04)     → 不顯示類別標籤
    試算表需設定：共用 → 知道連結的任何人 → 檢視者        */
-var SHEET_ID = "1Y3dHTCY3tgvOn6lWY-utVW6NbzH-zrrgdYVDPmDo1A4";
+var SHEET_ID = "1kd_RkujWUHfpo6SJmvicN9PrBFqK3QeZps4fHuoFdNg";
 var SOURCES = [
-  // col：欄位索引（0=A、1=B、2=C、3=D、4=E）
-  { sheet: "飲片", type: "飲片", cls: "herb",
-    col: { sku:0, name:1, slot:2, brand:-1, note:3, slot2:-1 } },// A料號 B名字 C新儲位 D備註（有值就顯示❄）
-  { sheet: "科中", type: "科中", cls: "ext",
-    col: { sku:0, name:1, slot:2, brand:4, note:-1, slot2:3 } }  // C=中藥局儲位、D=中藥庫儲位、E=廠牌
+  // col：0=A儲位 1=B中藥名 2=C冰庫 3=D藥庫儲位 4=E廠牌
+  { sheet: "工作表1",
+    col: { slot:0, name:1, note:2, slot2:3, brand:4 } }
 ];
 
 var HOME_LIMIT = 5, SEARCH_LIMIT = 50;
@@ -300,23 +303,28 @@ function loadSheet(src, done){
           var v = (c[i].v != null) ? c[i].v : (c[i].f != null ? c[i].f : "");
           return String(v).trim();
         }
+        var slot = val(C.slot);
+        // 依儲位開頭判類別
+        var type = "", cls = "";
+        var m = slot.match(/^([A-Za-z]+)/);   // 開頭連續英文字母
+        if(m){
+          if(m[1].length >= 2){ type = "飲片"; cls = "herb"; }
+          else { type = "科中"; cls = "ext"; }
+        } // 開頭非英文（中文）→ type/cls 留空，不顯示標籤
         return {
-          sku:   val(C.sku),
+          slot:  slot,
           name:  val(C.name),
-          slot:  val(C.slot),
           brand: val(C.brand),
-          note:  (C.note != null ? val(C.note) : ""),
-          slot2: (C.slot2 != null ? val(C.slot2) : ""),
-          type:  src.type,
-          cls:   src.cls
+          note:  val(C.note),
+          slot2: val(C.slot2),
+          type:  type,
+          cls:   cls
         };
       }).filter(function(d){
         if(!d.name) return false;
-        if(d.name.indexOf("名字") === 0 || d.name === "品名") return false;             // 標題列
-        if(d.slot.indexOf("儲位") >= 0 || d.sku === "料號") return false;
+        if(d.name === "中藥名" || d.slot === "儲位") return false;   // 標題列
         return true;
       });
-      if(false){}
     }catch(e){}
     cleanup();
     done(items);
@@ -386,17 +394,18 @@ function render(){
     return;
   }
   out.innerHTML = '<div class="list">' + hit.map(function(d){
-    return '<div class="item ' + (d.cls === "ext" ? "extcard" : "herbcard") + '" tabindex="0" data-copy="' + esc(d.name + " " + d.slot) + '">' +
+    var cardCls = d.cls === "ext" ? "extcard" : (d.cls === "herb" ? "herbcard" : "nocard");
+    return '<div class="item ' + cardCls + '" tabindex="0" data-copy="' + esc(d.name + " " + d.slot) + '">' +
              '<div class="name">' +
                '<span class="txt">' + hl(d.name, keys) + '</span>' +
-               '<span class="tag ' + d.cls + '">' + esc(d.type) + '</span>' +
+               (d.type ? '<span class="tag ' + d.cls + '">' + esc(d.type) + '</span>' : '') +
              '</div>' +
              '<div class="cslot">' + '<div class="slot ' + (d.cls === "ext" ? "ext" : "") + '">' + (hl(d.slot, keys) || "—") + '</div>' + '</div>' +
              '<div class="cslot2">' +
                (d.slot2 ? '<div class="slot2"><span class="k">庫</span>' + hl(d.slot2, keys) + '</div>' : '') +
                (d.brand ? '<div class="brand">' + esc(d.brand) + '</div>' : '') +
              '</div>' +
-             '<div class="side">' + (d.note ? '<span class="cold">❄<br>冷庫</span>' : '') + '</div>' +
+             '<div class="side">' + (d.note ? '<span class="cold">❄<br>冰庫</span>' : '') + '</div>' +
            '</div>';
   }).join("") + '</div>';
 
