@@ -281,7 +281,8 @@ function loadSheet(src, done){
   var cb = "gvizCB" + Math.random().toString(36).slice(2);
   var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID +
             "/gviz/tq?tqx=out:json;responseHandler:" + cb +
-            "&sheet=" + encodeURIComponent(src.sheet) + "&_=" + Date.now();
+            "&sheet=" + encodeURIComponent(src.sheet) +
+            "&headers=0&_=" + Date.now();
   var sc = document.createElement("script");
   var timer = setTimeout(function(){ cleanup(); done([]); }, 15000);
 
