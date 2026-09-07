@@ -263,11 +263,22 @@ function parseCSV(text){
 }
 
 function scoreOf(d, term){
-  var name = d.name.toLowerCase(), slot = d.slot.toLowerCase(), sku = (d.sku || "").toLowerCase();
-  if(name === term || slot === term || sku === term) return 100;
-  if(name.indexOf(term) === 0 || slot.indexOf(term) === 0 || sku.indexOf(term) === 0) return 80;
-  if(name.indexOf(term) >= 0 || slot.indexOf(term) >= 0 || sku.indexOf(term) >= 0) return 60;
-  var hay = name + slot + sku, chars = term.split("");
+  var name = d.name.toLowerCase(), slot = d.slot.toLowerCase(), slot2 = (d.slot2||"").toLowerCase();
+  var isEng = /^[a-z0-9]+$/.test(term);   // 純英數 → 當儲位查
+  if(isEng){
+    // 英文查詢：以儲位為主（局儲位 + 藥庫儲位）
+    if(slot === term || slot2 === term) return 100;
+    if(slot.indexOf(term) === 0 || slot2.indexOf(term) === 0) return 85;
+    if(slot.indexOf(term) >= 0 || slot2.indexOf(term) >= 0) return 65;
+    if(name.indexOf(term) >= 0) return 20;   // 藥名含英文也給低分
+    return 0;
+  }
+  // 中文查詢：以藥名為主
+  if(name === term) return 100;
+  if(name.indexOf(term) === 0) return 85;
+  if(name.indexOf(term) >= 0) return 65;
+  if(slot.indexOf(term) >= 0 || slot2.indexOf(term) >= 0) return 30;
+  var hay = name + slot, chars = term.split("");
   return chars.length && chars.every(function(c){ return hay.indexOf(c) >= 0; }) ? 30 + chars.length : 0;
 }
 
@@ -375,7 +386,7 @@ function fitNames(){
 
 function render(){
   var term = q.value.replace(/[\s　]/g, "").toLowerCase();
-  var keys = term ? [term].concat(term.split("")) : [];
+  var keys = term ? [q.value.trim()] : [];   // 只高亮完整輸入詞
 
   var matched = !term ? DATA :
     DATA.map(function(d){ return { d:d, s:scoreOf(d, term) }; })
